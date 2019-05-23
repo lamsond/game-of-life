@@ -1,0 +1,39 @@
+import React from 'react';
+
+export class Cell extends React.Component{
+	
+	constructor(props){
+		super(props);
+		this.state = {
+			alive: false,
+		}; 
+	}
+
+	handleClick(){
+		this.setState({alive: !this.state.alive,});
+		let n = this.state.alive ? 1:0;
+		this.props.call_back(this.props.row_props, this.props.col_pos, n);
+	}
+
+	updateLife(){
+		let n = this.props.neighbors;
+		let underpopulation = n < 2;
+		let lives_on = (n == 2 || n == 3) && this.state.alive;
+		let overpopulation = n > 3;
+		let new_birth = n == 3 && !this.state.alive;
+		let lv = lives_on || new_birth
+		this.setState({alive: lv,});
+	}
+
+	render(){
+		let bg = this.state.alive ? '#0d0d0d':'#d0d0d0';
+		let cellStyle = {
+			backgroundColor: bg,
+			width: this.props.width,
+			height: this.props.width,
+
+		};
+		return <td style={cellStyle} onClick={this.handleClick.bind(this)}></td>
+	}
+}
+

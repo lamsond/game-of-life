@@ -1,0 +1,85 @@
+import React from 'react';
+import {Cell} from './Cell.js';
+
+export class Board extends React.Component{
+	
+	constructor(props){
+		super(props);
+		this.state = {
+			cells: this.buildArray(),
+		};
+		this.isThereAnybodyOutThere = this.isThereAnybodyOutThere.bind(this);
+	}
+
+	buildArray(){
+		let sq = [];
+		let row = Array(this.props.size).fill(0);
+		for(let i = 0; i < this.props.size; i++){
+			sq.push(row);
+		}
+		return sq;
+	}
+
+	isThereAnybodyOutThere(x, y, val){
+		console.log("Houston we have a problem");
+		this.setState({
+			cells: val,});
+	}
+
+	getNeighborCount(i, j){
+		let living_neighbors = 0;
+		for(let x = i - 1; x < i + 1; x++){
+			for(let y = j - 1; y < j + 1; y++){
+				let not_me = (x==i && y==j);
+				let in_bounds = x >= 0 && y >= 0;
+				if(not_me && in_bounds){
+				living_neighbors += this.state.cells[i][j];
+				}
+			}
+		}
+		return living_neighbors;
+	}
+
+	renderCell(i, j){
+		let cellWidth = Math.round(this.props.width/this.props.size);
+		return (
+			<Cell 
+				width={cellWidth}
+				row_pos={i}
+				col_pos={j}
+				call_back={this.isThereAnybodyOutThere}
+				neighbors={this.getNeighborCount(i, j)}	
+				
+			/>
+		       );
+	}
+
+
+
+
+	renderTable(){
+
+		let table = [];
+		for(let i = 0; i < this.props.size; i++){
+			let row = [];
+			for(let j = 0; j < this.props.size; j++){
+				row.push(this.renderCell(i, j));
+			}
+			table.push(<tr>{row}</tr>);
+		}
+		return table;
+	}
+
+	render(){
+
+		let tableStyle = {
+			borderWidth: 2,
+			borderStyle: 'solid',
+			borderColor: '#232323',
+			borderRadius: 5,
+			width: this.props.width,
+			margin: 'auto',
+		}
+		return (<table style={tableStyle}><tbody>{this.renderTable()}</tbody></table>);
+	}
+}
